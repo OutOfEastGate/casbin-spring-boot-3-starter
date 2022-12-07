@@ -1,0 +1,56 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.0.0' apply false
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply from: "maven.gradle"
+apply from: "jacoco.gradle"
+
+group = 'org.casbin'
+sourceCompatibility = '17'
+targetCompatibility = '17'
+compileJava.options.encoding = 'UTF-8'
+
+jar {
+    enabled = true
+    archivesBaseName = 'casbin-spring-boot-3-starter'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+dependencies {
+    api 'org.casbin:jcasbin:1.31.2'
+    compileOnly 'org.springframework.boot:spring-boot-starter-data-redis'
+    runtimeOnly 'com.h2database:h2:2.1.214'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.casbin:jcasbin-redis-watcher:1.4.1'
+    implementation 'org.casbin:jdbc-adapter:2.4.0'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    testRuntimeOnly 'mysql:mysql-connector-java:8.0.30'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.assertj:assertj-core'
+}
